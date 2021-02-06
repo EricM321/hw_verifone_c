@@ -46,6 +46,16 @@ int validateCardNumber(char ** beginPtr, char ** endPtr, char ** cardNumPtr, cha
 	return 1;
 }
 
+char * indexOf(char * arrayPtr, char * endOfArrayPtr, char find){
+	while(arrayPtr != endOfArrayPtr){
+		if(*arrayPtr == find){
+			return arrayPtr;
+		}
+		++arrayPtr;
+	}
+	return endOfArrayPtr;
+}
+
 int main()
 {
 	
@@ -140,13 +150,15 @@ int main()
 		}
 
 		int amountNotOK = 1;
-		char enteredAmount[8] = {0};
+		// Expect N = 7 + 2 as last character will be \0 and 2nd last \n
+		char enteredAmount[9] = {0};
+		char * enteredAmountEndPtr = (char *)(&enteredAmount + 1) - 1;
 
 		while(amountNotOK){
 			int ok = 1;
 			// Get amount entry
 			printf("\nEnter amount (format nnnn.mm): ");
-			fgets(enteredAmount, 8, stdin);
+			fgets(enteredAmount, 9, stdin);
 
 			int count = sizeof(enteredAmount) / sizeof(enteredAmount[0]);
 			int decimals = 0;
@@ -154,8 +166,8 @@ int main()
 			for (int i = 0; i < count - 1; ++i) {
 				if (enteredAmount[i] == '.') {
 					++decimals;
-				} else if (!isdigit(enteredAmount[i]) && enteredAmount[i] != '\n' && enteredAmount[i] != '\0')
-				{
+				}
+				else if (!isdigit(enteredAmount[i]) && enteredAmount[i] != '\n' && enteredAmount[i] != '\0'){
 					printf("Incorrect '%c'", enteredAmount[i]);
 					ok = 0;
 					break;
@@ -163,16 +175,27 @@ int main()
 				
 			}
 
-			if(decimals > 1 || decimals < 1){
+			char *ptr = indexOf(enteredAmount, enteredAmountEndPtr, '.')+1;
+			int i = 0;
+			while(*ptr != '\n' && *ptr != '\0'){
+				++i;
+				++ptr;
+			}
+
+			if(*(indexOf(enteredAmount, enteredAmountEndPtr, '\n')) != '\n'){
+				printf("\nAmount entered is too large!");
+			}
+			else if(decimals > 1 || decimals < 1){
 				printf("\nThis amount has an incorrect amount of decimal points!");
 			}
-			else if(!ok){
+			else if(!ok || i != 2){
 				printf("\nEntered amount does not match the format!");
 			}
 			else {
 				printf("\nEntered amount is: %.2f", atof(enteredAmount));
 				amountNotOK = 0;
 			}
+			fflush(stdin);
 		}
 
 		FILE * fPtr = fopen("output/file1.txt", "a");
