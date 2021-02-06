@@ -183,7 +183,7 @@ int main()
 			}
 
 			if(*(indexOf(enteredAmount, enteredAmountEndPtr, '\n')) != '\n'){
-				printf("\nAmount entered is too large!");
+				printf("\nAmount entered is too large or too short!");
 			}
 			else if(decimals > 1 || decimals < 1){
 				printf("\nThis amount has an incorrect amount of decimal points!");
@@ -200,19 +200,19 @@ int main()
 
 		FILE * fPtr = fopen("output/file1.txt", "a");
 
-		/* fopen() return NULL if last operation was unsuccessful */
+		/* fopen() returns NULL if last operation was unsuccessful */
 		if(fPtr == NULL)
 		{
-			/* File not created hence exit */
 			printf("\nUnable to create file.");
 			exit(EXIT_FAILURE);
 		}
 
+		/* Alter \n\0 in cardNum */
+		*(cardNumEndPtr-2) = ' ';
+		*(cardNumEndPtr-1) = ';';
+
 		/* Write data to file */
-		char space[] = {';'};
-		fputs(cardNum, fPtr);
-		fputs(space, fPtr);
-		fputs(enteredAmount, fPtr);
+		fprintf(fPtr, "%s %s", cardNum, enteredAmount);
 
 		fclose(fPtr);
 
