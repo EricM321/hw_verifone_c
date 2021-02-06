@@ -121,9 +121,14 @@ int main()
 			char * beginPtr = cardValidation;
 			char * endPtr = beginPtr;
 
-			movePointer(&endPtr);
-			
-			for(i = 0; i < 3; ++i){
+			char * lastSemiColonInFile = (char *)(&cardValidation + 1) - 1;
+			while(*lastSemiColonInFile != ';'){
+				--lastSemiColonInFile;
+			}
+
+			while(endPtr != lastSemiColonInFile+1){
+
+				movePointer(&endPtr);
 
 				isValid = validateCardNumber(&beginPtr, &endPtr, &cardNumPtr, cardNum);
 
@@ -136,11 +141,10 @@ int main()
 					break;
 				} else {
 					cardNumPtr = cardNum;
-					++endPtr;
-					movePointer(&endPtr);
-					++endPtr;
+					while(*endPtr != ';'){
+						++endPtr;
+					}
 					beginPtr = ++endPtr;
-					movePointer(&endPtr);
 				}
 			}
 
