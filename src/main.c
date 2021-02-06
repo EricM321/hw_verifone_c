@@ -69,7 +69,8 @@ int main()
 
 	while(1){
 	
-		char cardNum[17] = {0};
+		// Expect N = 16 + 2 as last character will be \0 and 2nd last \n
+		char cardNum[18] = {0};
 		char * cardNumBeginPtr = cardNum;
 		char * cardNumEndPtr = (char *)(&cardNum + 1) - 1;
 		int cardNotOK = 1;
@@ -80,22 +81,25 @@ int main()
 			while(cardNotOK){
 				// Get card entry
 				printf("\nEnter your card number (16 digits): ");
-				fgets(cardNum, 17, stdin);
+				fgets(cardNum, 18, stdin);
 
-
-				while(cardNumBeginPtr != cardNumEndPtr){
-					if(!isdigit(*cardNumBeginPtr)){
-						printf("\nEntered card number is invalid: ");
-						cardNumBeginPtr = cardNum;
-						Print(cardNumBeginPtr, cardNumEndPtr);
-						break;
+				if(*(cardNumEndPtr-1) == '\n'){
+					while(cardNumBeginPtr != cardNumEndPtr-2){
+						if(!isdigit(*cardNumBeginPtr)){
+							printf("\nEntered card number is invalid: ");
+							cardNumBeginPtr = cardNum;
+							Print(cardNumBeginPtr, cardNumEndPtr);
+							break;
+						}
+						++cardNumBeginPtr;
 					}
-					++cardNumBeginPtr;
-				}
-				fflush(stdin);
+					fflush(stdin);
 
-				if(cardNumBeginPtr == cardNumEndPtr){
-					cardNotOK = 0;
+					if(cardNumBeginPtr == cardNumEndPtr-2){
+						cardNotOK = 0;
+					}
+				} else{
+					printf("\nEntered card number is too long!");
 				}
 			}
 			
@@ -142,7 +146,7 @@ int main()
 			int ok = 1;
 			// Get amount entry
 			printf("\nEnter amount (format nnnn.mm): ");
-			fgets(enteredAmount, 17, stdin);
+			fgets(enteredAmount, 8, stdin);
 
 			int count = sizeof(enteredAmount) / sizeof(enteredAmount[0]);
 			int decimals = 0;
