@@ -7,7 +7,7 @@
 CC = gcc
 
 # define any compile-time flags
-CFLAGS	:= -Wall -Wextra -g
+CFLAGS	:= -Wall -Wextra -g3
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
@@ -26,9 +26,14 @@ INCLUDE	:= include
 # define lib directory
 LIB		:= lib
 
+# define test directory
+TEST	:= test
+
 ifeq ($(OS),Windows_NT)
 MAIN	:= main.exe
+TESTS    := tests.exe
 SOURCEDIRS	:= $(SRC)
+TESTDIRS	:= $(TEST)
 INCLUDEDIRS	:= $(INCLUDE)
 LIBDIRS		:= $(LIB)
 FIXPATH = $(subst /,\,$1)
@@ -36,7 +41,9 @@ RM			:= del /q /f
 MD	:= mkdir
 else
 MAIN	:= main
+TESTS    := tests
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
+TESTDIRS	:= $(shell find $(TEST) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
 FIXPATH = $1
@@ -52,9 +59,11 @@ LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 # define the C source files
 SOURCES		:= $(wildcard $(patsubst %,%/*.c, $(SOURCEDIRS)))
+TESTSRCS	:= $(wildcard $(patsubst %,%/*.c, $(TESTDIRS)))
 
 # define the C object files 
 OBJECTS		:= $(SOURCES:.c=.o)
+OBJECTSTEST	:= $(TESTSRCS:.c=.o)
 
 #
 # The following part of the makefile is generic; it can be used to 
@@ -63,6 +72,7 @@ OBJECTS		:= $(SOURCES:.c=.o)
 #
 
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
+OUTPUTTESTS	:= $(call FIXPATH,$(OUTPUT)/$(TESTS))
 
 all: $(OUTPUT) $(MAIN)
 	@echo Executing 'all' complete!
@@ -72,6 +82,9 @@ $(OUTPUT):
 
 $(MAIN): $(OBJECTS) 
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
+
+$(TESTS): $(OBJECTSTEST) $(OBJECTS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTTESTS) $(OBJECTSTEST) src/fileIO.o $(LFLAGS) $(LIBS) -lcheck -lpthread -lrt -lm -lsubunit
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
@@ -83,9 +96,18 @@ $(MAIN): $(OBJECTS)
 .PHONY: clean
 clean:
 	$(RM) $(OUTPUTMAIN)
+	$(RM) $(OUTPUTTESTS)
 	$(RM) $(call FIXPATH,$(OBJECTS))
+	$(RM) $(call FIXPATH,$(OBJECTSTEST))
 	@echo Cleanup complete!
 
 run: all
 	./$(OUTPUTMAIN)
 	@echo Executing 'run: all' complete!
+
+test: $(OUTPUT) $(TESTS)
+	@echo Executing 'test' complete!
+
+run_test:
+	./$(OUTPUTTESTS)
+	@echo Executing 'run_test' complete!
