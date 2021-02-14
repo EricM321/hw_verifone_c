@@ -1,43 +1,35 @@
 #include <check.h>
-#include "../src/fileIO.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include "../src/fileIO.h"
 
-
-START_TEST(test_should_load_validation_file){
+START_TEST(test_should_load_test_file){
     char validFile[100] = {0};
     loadValidationFile(validFile, "test/resources/test.txt");
     ck_assert_str_eq(validFile, ";;;");
 }
 END_TEST
 
-/*START_TEST(test_should_load_validation_file){
-    ck_assert_str_eq(loadValidationFile(), ";;;");
+START_TEST(test_should_save_file){
+    saveFile("1;","VISA;","10.23;", "test/resources/saveTest.txt");
+    
+    char validFile[100] = {0};
+    loadValidationFile(validFile, "test/resources/saveTest.txt");
+    ck_assert_str_eq(validFile, "1;VISA;10.23;\n");
+    remove("test/resources/saveTest.txt");
 }
-END_TEST*/
+END_TEST
 
 Suite * file_suite(void){
-    Suite *s;
+    Suite *suite;
     TCase *tc_core;
     
-    s = suite_create("File IO");
+    suite = suite_create("File IO");
     tc_core = tcase_create("Core");
     
     tcase_add_test(tc_core, test_should_load_validation_file);
-    suite_add_tcase(s, tc_core);
+    tcase_add_test(tc_core, test_should_save_file);
+    suite_add_tcase(suite, tc_core);
     
-    return s;
-}
-
-int main(void){
-    int number_failed = 0;
-    Suite *s;
-    SRunner *sr;
-    
-    s = file_suite();
-    sr = srunner_create(s);
-    
-    srunner_run_all(sr, CK_VERBOSE);
-    number_failed = srunner_ntests_failed(sr);
-    srunner_free(sr);
-    return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+    return suite;
 }
