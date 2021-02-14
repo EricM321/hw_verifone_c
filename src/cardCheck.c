@@ -84,6 +84,10 @@ int getCardType(char * cardValidator, char * endOfCardValidator, char * cardNumb
     }
     
     printf("Card does not match any type\n");
+    #ifdef _WIN32
+    Sleep(2000);
+    #else
     sleep(2);
+    #endif
     return 0;
 }
