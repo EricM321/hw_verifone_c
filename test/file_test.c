@@ -27,7 +27,7 @@ Suite * file_suite(void){
     suite = suite_create("File IO");
     tc_core = tcase_create("Core");
     
-    tcase_add_test(tc_core, test_should_load_validation_file);
+    tcase_add_test(tc_core, test_should_load_test_file);
     tcase_add_test(tc_core, test_should_save_file);
     suite_add_tcase(suite, tc_core);
     

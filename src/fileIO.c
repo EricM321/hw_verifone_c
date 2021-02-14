@@ -21,7 +21,7 @@ void loadValidationFile(char * buffer, char * filePath){
 	}
 }
 
-void saveFile(char * cardNumber, char * cardName, char * amount, char * filePath){
+void saveFile(char * cardNumber, char * cardType, char * amount, char * filePath){
     FILE * fPtr = fopen(filePath, "a");
 
     /* fopen() returns NULL if last operation was unsuccessful */
@@ -36,7 +36,7 @@ void saveFile(char * cardNumber, char * cardName, char * amount, char * filePath
     *(cardNumEndPtr-1) = ';';*/
 
     /* Write data to file */
-    fprintf(fPtr, "%s%s%s\n", cardNumber, cardName, amount);
+    fprintf(fPtr, "%s%s%s\n", cardNumber, cardType, amount);
 
     fclose(fPtr);
 

@@ -2,6 +2,8 @@
     "files.associations": {
         "stdlib.h": "c",
         "fileio.h": "c",
-        "check.h": "c"
+        "check.h": "c",
+        "stdio.h": "c",
+        "userinput.h": "c"
     }
 }

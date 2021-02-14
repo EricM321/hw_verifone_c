@@ -84,7 +84,7 @@ $(MAIN): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
 
 $(TESTS): $(OBJECTSTEST) $(OBJECTS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTTESTS) $(OBJECTSTEST) src/fileIO.o $(LFLAGS) $(LIBS) -lcheck -lpthread -lrt -lm -lsubunit
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(OUTPUTTESTS) $(OBJECTSTEST) src/fileIO.o src/userInput.o $(LFLAGS) $(LIBS) -lcheck -lpthread -lrt -lm -lsubunit
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of

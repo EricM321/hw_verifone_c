@@ -18,6 +18,7 @@ int main(void){
     SRunner *sr;
 
     sr = srunner_create(make_master_suite());
+    srunner_add_suite(sr, input_validation_suite());
     srunner_add_suite(sr, file_suite());
     
     srunner_run_all(sr, CK_VERBOSE);
