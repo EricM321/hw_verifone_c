@@ -40,5 +40,5 @@ void saveFile(char * cardNumber, char * cardType, char * amount, char * filePath
 
     fclose(fPtr);
 
-    printf("\nFile saved successfully in output folder.");
+    printf("\nFile saved successfully in output folder.\n");
 }
