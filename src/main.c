@@ -1,226 +1,81 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "fileIO.h"
+#include "userInput.h"
+#include "cardCheck.h"
+#include "common.h"
 
-void Print(char * begin, char * end){
-	for(; begin != end; ++begin){
-		printf("%c", *begin);
-	}
+void clear (void)
+{
+	char c;
+	while((c = getchar()) != '\n' && c != EOF);
 }
 
-void movePointer(char ** start){
-	++(*start);
-	while(**start != ';'){
-		++(*start);
-	}
-}
-
-int validateCardNumber(char ** beginPtr, char ** endPtr, char ** cardNumPtr, char  cardNum[]){
-
-	while(*beginPtr != *endPtr){
-		if((int) **cardNumPtr >= (int) **beginPtr){
-			++(*beginPtr);
-			++(*cardNumPtr);
-		}
-		else {
-			return  0;
-			break;
-		}
-	}
-
-	*beginPtr = *endPtr + 1;
-	movePointer(&*endPtr);
-	*cardNumPtr = cardNum;
-
-	while(*beginPtr != *endPtr){
-		if((int) **cardNumPtr <= (int) **beginPtr){
-			++(*beginPtr);
-			++(*cardNumPtr);
-		}
-		else {
-			return 0;
-			break;
-		}
-	}
-
-	return 1;
-}
-
-char * indexOf(char * arrayPtr, char * endOfArrayPtr, char find){
-	while(arrayPtr != endOfArrayPtr){
-		if(*arrayPtr == find){
-			return arrayPtr;
-		}
-		++arrayPtr;
-	}
-	return endOfArrayPtr;
+int valueInArray(char val, char arr[], int arrSize)
+{
+    int i;
+    for(i = 0; i < arrSize; ++i)
+    {
+        if(arr[i] == val)
+            return 1;
+    }
+    return 0;
 }
 
 int main()
 {
-	
-	char cardValidation[88] = {0};
-	char c;
-	int i = 0;
-
-	// Check file exists
-	FILE *in_file  = fopen("src/file.txt", "r");
-
-	if (! in_file){
-		printf("Error! Could not open file\n");
-		exit(-1);
-	}
-
-	// load file
-	while (fscanf(in_file, "%c", &c) == 1){
-		cardValidation[i] = c;
-		++i;
-	}
+	char cardValidation[89] = {0};
+	loadValidationFile(cardValidation, "src/file.txt");
 
 	while(1){
-	
-		// Expect N = 16 + 2 as last character will be \0 and 2nd last \n
 		char cardNum[18] = {0};
-		char * cardNumBeginPtr = cardNum;
 		char * cardNumEndPtr = (char *)(&cardNum + 1) - 1;
-		int cardNotOK = 1;
-		
-		
+		char type[11] = {0};
 
-		while(cardNotOK){
-			while(cardNotOK){
-				// Get card entry
+		do{
+			do{
+				for(int i = 0; i < 18; ++i){
+					cardNum[i] = '\0';
+				}
 				printf("\nEnter your card number (16 digits): ");
 				fgets(cardNum, 18, stdin);
 
-				if(*(cardNumEndPtr-1) == '\n'){
-					while(cardNumBeginPtr != cardNumEndPtr-2){
-						if(!isdigit(*cardNumBeginPtr)){
-							printf("\nEntered card number is invalid: ");
-							cardNumBeginPtr = cardNum;
-							Print(cardNumBeginPtr, cardNumEndPtr);
-							break;
-						}
-						++cardNumBeginPtr;
-					}
-					fflush(stdin);
-
-					if(cardNumBeginPtr == cardNumEndPtr-2){
-						cardNotOK = 0;
-					}
-				} else{
-					printf("\nEntered card number is too long!");
+				if(!valueInArray('\n', cardNum, sizeof(cardNum)/sizeof(cardNum[0]))){
+					clear();
 				}
-			}
-			
-			printf("\nEntered Card Number: %s",cardNum);
+			}while(!validateCardNumber(cardNum, cardNumEndPtr));
 
-			cardNotOK = 1;
-			int isValid = 0;
-			char * cardNumPtr = cardNum;
-			char * beginPtr = cardValidation;
-			char * endPtr = beginPtr;
+			printf("Entered card: %s", cardNum);
 
-			char * lastSemiColonInFile = (char *)(&cardValidation + 1) - 1;
-			while(*lastSemiColonInFile != ';'){
-				--lastSemiColonInFile;
+		}while(!getCardType(cardValidation, (char *)(&cardValidation + 1) - 1, cardNum, type));
+
+		char amount[9] = {0};
+
+		do{
+			for(int i = 0; i < 9; ++i){
+				amount[i] = '\0';
 			}
 
-			while(endPtr != lastSemiColonInFile+1){
-
-				movePointer(&endPtr);
-
-				isValid = validateCardNumber(&beginPtr, &endPtr, &cardNumPtr, cardNum);
-
-				if(isValid){
-					printf("\nCard is vaild of type: ");
-					char * start = ++endPtr;
-					movePointer(&endPtr);
-					Print(start, endPtr);
-					cardNotOK = 0;
-					break;
-				} else {
-					cardNumPtr = cardNum;
-					while(*endPtr != ';'){
-						++endPtr;
-					}
-					beginPtr = ++endPtr;
-				}
-			}
-
-			if(!isValid){
-				printf("\nThis card is not a vaild type: %s", cardNum);
-			}
-		}
-
-		int amountNotOK = 1;
-		// Expect N = 7 + 2 as last character will be \0 and 2nd last \n
-		char enteredAmount[9] = {0};
-		char * enteredAmountEndPtr = (char *)(&enteredAmount + 1) - 1;
-
-		while(amountNotOK){
-			int ok = 1;
-			// Get amount entry
 			printf("\nEnter amount (format nnnn.mm): ");
-			fgets(enteredAmount, 9, stdin);
+			fgets(amount, 9, stdin);
 
-			int count = sizeof(enteredAmount) / sizeof(enteredAmount[0]);
-			int decimals = 0;
-
-			for (int i = 0; i < count - 1; ++i) {
-				if (enteredAmount[i] == '.') {
-					++decimals;
-				}
-				else if (!isdigit(enteredAmount[i]) && enteredAmount[i] != '\n' && enteredAmount[i] != '\0'){
-					printf("Incorrect '%c'", enteredAmount[i]);
-					ok = 0;
-					break;
-				}
-				
+			if(!valueInArray('\n', amount, sizeof(amount)/sizeof(amount[0]))){
+				clear();
 			}
+		}while(!validateAmount(amount, (char *)(&amount + 1) - 1));
 
-			char *ptr = indexOf(enteredAmount, enteredAmountEndPtr, '.')+1;
-			int i = 0;
-			while(*ptr != '\n' && *ptr != '\0'){
-				++i;
-				++ptr;
-			}
+		char * newl = (indexOf(cardNum, cardNumEndPtr, '\n'));
+		*newl = ';';
 
-			if(*(indexOf(enteredAmount, enteredAmountEndPtr, '\n')) != '\n'){
-				printf("\nAmount entered is too large or too short!");
-			}
-			else if(decimals > 1 || decimals < 1){
-				printf("\nThis amount has an incorrect amount of decimal points!");
-			}
-			else if(!ok || i != 2){
-				printf("\nEntered amount does not match the format!");
-			}
-			else {
-				printf("\nEntered amount is: %.2f", atof(enteredAmount));
-				amountNotOK = 0;
-			}
-			fflush(stdin);
-		}
+		newl = indexOf(amount, (char *)(&amount + 1) - 1, '\n');
+		*newl = ';';
 
-		FILE * fPtr = fopen("output/file1.txt", "a");
+		newl = indexOf(type, (char *)(&type + 1) - 1, '\0');
+		*newl = ';';
 
-		/* fopen() returns NULL if last operation was unsuccessful */
-		if(fPtr == NULL)
-		{
-			printf("\nUnable to create file.");
-			exit(EXIT_FAILURE);
-		}
-
-		/* Alter \n\0 in cardNum */
-		*(cardNumEndPtr-2) = ' ';
-		*(cardNumEndPtr-1) = ';';
-
-		/* Write data to file */
-		fprintf(fPtr, "%s %s", cardNum, enteredAmount);
-
-		fclose(fPtr);
-
-		printf("\nFile saved successfully in output.");
+		saveFile(cardNum, type, amount, "output/file1.txt");
 	}
+
 	return (0);
 }

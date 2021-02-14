@@ -11,12 +11,17 @@ void loadValidationFile(char * buffer, char * filePath){
 
 	if (! in_file){
 		printf("Error! Could not open file\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	// load file
-	while (fscanf(in_file, "%c", &c) == 1){
-		buffer[i] = c;
+	while ((c = fgetc(in_file)) != EOF){
+        if(c == '\n'){
+            continue;
+        }
+        else{
+            buffer[i] = c;
+        }
 		++i;
 	}
 }
@@ -27,17 +32,11 @@ void saveFile(char * cardNumber, char * cardType, char * amount, char * filePath
     /* fopen() returns NULL if last operation was unsuccessful */
     if(fPtr == NULL)
     {
-        perror("\nUnable to create file or open file.");
+        perror("Unable to create file or open file.\n");
         exit(EXIT_FAILURE);
     }
 
-    /* Alter \n\0 in cardNum needs to be done before method call
-    *(cardNumEndPtr-2) = ' ';
-    *(cardNumEndPtr-1) = ';';*/
-
-    /* Write data to file */
     fprintf(fPtr, "%s%s%s\n", cardNumber, cardType, amount);
-
     fclose(fPtr);
 
     printf("\nFile saved successfully in output folder.\n");

@@ -16,4 +16,4 @@
 5. From cmd: mingw32-make
 6. .\output\main.exe
 
-fputs is doing weird things when saving and I can't figure out why it is doing it. At the moment it duplicates last value put
+The test framework used is check installation instructions [here](https://libcheck.github.io/check/)

@@ -1,3 +1,9 @@
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #include <stdio.h>
 #include "cardCheck.h"
 #include "common.h"
@@ -41,7 +47,7 @@ int compareCardNumber(char ** beginPtr, char ** endPtr, char ** cardNumPtr, char
 }
 
 
-void getCardType(char * cardValidator, char * endOfCardValidator, char * cardNumber, char * type){
+int getCardType(char * cardValidator, char * endOfCardValidator, char * cardNumber, char * type){
     char * cardNumPtr = cardNumber;
     char * rangeBegin = cardValidator;
     char * rangeEnd = cardValidator;
@@ -67,7 +73,7 @@ void getCardType(char * cardValidator, char * endOfCardValidator, char * cardNum
             }
 
             printf("\nCard is vaild of type: %s\n", type);
-            break;
+            return 1;
         } else {
             cardNumPtr = cardNumber;
             while(*rangeEnd != ';'){
@@ -76,5 +82,8 @@ void getCardType(char * cardValidator, char * endOfCardValidator, char * cardNum
             rangeBegin = ++rangeEnd;
         }
     }
-
+    
+    printf("Card does not match any type\n");
+    sleep(2);
+    return 0;
 }

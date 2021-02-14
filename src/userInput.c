@@ -33,7 +33,7 @@ int validateAmount(char * amount, char * amountEndPtr){
             ++decimals;
         }
         else if (!isdigit(*amountBeginPtr) && *amountBeginPtr != '\n' && *amountBeginPtr != '\0'){
-            printf("Amount contains none digits: ");
+            printf("Amount contains none digit characters: ");
             Print(amount, amountEndPtr);
             return 0;
         }

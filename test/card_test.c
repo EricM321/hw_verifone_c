@@ -16,6 +16,9 @@ START_TEST(test_card_number_should_be_MASTERCARD){
     char type[10] = {0};
     getCardType(validationFile, (char *)(&validationFile + 1) - 1, "5000000000000000\n\0", type);
     ck_assert_str_eq(type , "MASTERCARD");
+
+    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "5123467890123456\n\0", type);
+    ck_assert_str_eq(type , "MASTERCARD");
 }
 END_TEST
 
@@ -28,26 +31,22 @@ END_TEST
 
 START_TEST(test_card_numbers_should_be_invalid){
     char type[10] = {0};
-    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "1700000000000000\n\0", type);
-    ck_assert_str_eq(type , "");
+    
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "1700000000000000\n\0", type));
 
-    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "2700000000000000\n\0", type);
-    ck_assert_str_eq(type , "");
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "2700000000000000\n\0", type));
 
-    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "3700000000000000\n\0", type);
-    ck_assert_str_eq(type , "");
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "3700000000000000\n\0", type));
 
-    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "6000000000000000\n\0", type);
-    ck_assert_str_eq(type , "");
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "6000000000000000\n\0", type));
 
-    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "7700000000000000\n\0", type);
-    ck_assert_str_eq(type , "");
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "7700000000000000\n\0", type));
 
-    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "8700000000000000\n\0", type);
-    ck_assert_str_eq(type , "");
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "8700000000000000\n\0", type));
 
-    getCardType(validationFile, (char *)(&validationFile + 1) - 1, "9700000000000000\n\0", type);
-    ck_assert_str_eq(type , "");
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "9700000000000000\n\0", type));
+
+    ck_assert(!getCardType(validationFile, (char *)(&validationFile + 1) - 1, "3712456890123456\n\0", type));
 }
 END_TEST
 
