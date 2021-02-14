@@ -20,6 +20,7 @@ int main(void){
     sr = srunner_create(make_master_suite());
     srunner_add_suite(sr, input_validation_suite());
     srunner_add_suite(sr, file_suite());
+    srunner_add_suite(sr, card_validation_suite());
     
     srunner_run_all(sr, CK_VERBOSE);
     number_failed = srunner_ntests_failed(sr);

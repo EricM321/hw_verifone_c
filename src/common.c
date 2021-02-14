@@ -5,6 +5,7 @@ void Print(char * begin, char * end){
 	for(; begin != end; ++begin){
 		printf("%c", *begin);
 	}
+	printf("\n");
 }
 
 char * indexOf(char * arrayPtr, char * endOfArrayPtr, char find){
